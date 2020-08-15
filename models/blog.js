@@ -1,5 +1,5 @@
-const config = require('../utils/config.js')
 const mongoose = require('mongoose')
+const config = require('../utils/config.js')
 
 const blogSchema = new mongoose.Schema({
   title: String,
