@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const config = require('../utils/config.js')
 
-mongoose.set('useFindAndModify', false);
+mongoose.set('useFindAndModify', false)
 
 const blogSchema = new mongoose.Schema({
     title: { type: String , required : true}, 
