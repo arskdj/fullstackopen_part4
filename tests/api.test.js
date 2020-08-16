@@ -75,7 +75,7 @@ describe('api tests', () => {
             likes : 123
         }
 
-        const response = await api.post(url)
+        await api.post(url)
             .send(blog)
             .expect(400)
             .expect('Content-Type', /application\/json/)
@@ -84,7 +84,7 @@ describe('api tests', () => {
     test('delete blog', async () => {
         const blog = Blog(h.initialBlogs[0]).toJSON()
 
-        const response = await api.delete(`${url}/${blog.id}`)
+        await api.delete(`${url}/${blog.id}`)
             .expect(200)
             .expect(blog)
             .expect('Content-Type', /application\/json/)
@@ -95,7 +95,7 @@ describe('api tests', () => {
         let blog = Blog(h.initialBlogs[0]).toJSON()
         blog.likes = 99999
 
-        const response = await api.put(`${url}/${blog.id}`)
+        await api.put(`${url}/${blog.id}`)
             .send(blog)
             .expect(200)
             .expect(blog)
