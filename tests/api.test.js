@@ -27,5 +27,13 @@ describe('api tests', () => {
 
         expect(response.body.length).toBe(6)
     })
+
+    test('id is defined', async () => {
+        const response = await api.get('/api/blogs/')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        expect(response.body[0].id).toBeDefined()
+    })
 })
 
