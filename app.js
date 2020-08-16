@@ -7,5 +7,4 @@ app.use(cors())
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
 
-console.log('app=', app)
 module.exports = app
