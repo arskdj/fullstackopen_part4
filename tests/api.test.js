@@ -4,12 +4,12 @@ const api = supertest(app)
 const h = require('./helper')
 require('express-async-errors')
 
-beforeEach(() => {
-    h.initDB()
+beforeEach( async () => {
+    await h.initDB()
 })
 
-afterAll(() => {
-    h.closeDB()
+afterAll( async () => {
+    await h.closeDB()
 })
 
 describe('api tests', () => {
@@ -51,6 +51,21 @@ describe('api tests', () => {
 
         const allBlogs = await h.getAllBlogs()
         expect(allBlogs).toHaveLength(h.initialBlogs.length + 1)
+    })
+
+    test('likes default value', async () => {
+        const tempBlog = {
+            title: 'temp title',
+            author : 'temp author',
+            url : 'temp url',
+        }
+
+        const response = await api.post(url)
+            .send(tempBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        expect(response.body.likes).toBe(0)
     })
 })
 
