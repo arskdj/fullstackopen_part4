@@ -67,5 +67,17 @@ describe('api tests', () => {
 
         expect(response.body.likes).toBe(0)
     })
+
+    test('check required properties', async () => {
+        const tempBlog = {
+            author : 'temp author',
+            likes : 123
+        }
+
+        const response = await api.post(url)
+            .send(tempBlog)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+    })
 })
 
