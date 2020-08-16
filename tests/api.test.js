@@ -2,6 +2,7 @@ const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 const h = require('./helper')
+const Blog = require('../models/blog')
 require('express-async-errors')
 
 beforeEach( async () => {
@@ -13,7 +14,7 @@ afterAll( async () => {
 })
 
 describe('api tests', () => {
-    const url = '/api/blogs'
+    const url = '/api/blogs/'
 
     test('get blogs url', async () => {
         const response = await api.get(url)
@@ -32,7 +33,7 @@ describe('api tests', () => {
     })
 
     test('post blog', async () => {
-        const tempBlog = {
+        const blog = {
             title: 'temp title',
             author : 'temp author',
             url : 'temp url',
@@ -40,28 +41,28 @@ describe('api tests', () => {
         }
 
         const response = await api.post(url)
-            .send(tempBlog)
+            .send(blog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
         const newBlog = response.body
         delete newBlog.id
 
-        expect(tempBlog).toEqual(newBlog)
+        expect(blog).toEqual(newBlog)
 
         const allBlogs = await h.getAllBlogs()
         expect(allBlogs).toHaveLength(h.initialBlogs.length + 1)
     })
 
     test('likes default value', async () => {
-        const tempBlog = {
+        const blog = {
             title: 'temp title',
             author : 'temp author',
             url : 'temp url',
         }
 
         const response = await api.post(url)
-            .send(tempBlog)
+            .send(blog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
@@ -69,14 +70,23 @@ describe('api tests', () => {
     })
 
     test('check required properties', async () => {
-        const tempBlog = {
+        const blog = {
             author : 'temp author',
             likes : 123
         }
 
         const response = await api.post(url)
-            .send(tempBlog)
+            .send(blog)
             .expect(400)
+            .expect('Content-Type', /application\/json/)
+    })
+
+    test('delete blog', async () => {
+        const blog = Blog(h.initialBlogs[0]).toJSON()
+
+        const response = await api.delete(`${url}/${blog.id}`)
+            .expect(200)
+            .expect(blog)
             .expect('Content-Type', /application\/json/)
     })
 })
