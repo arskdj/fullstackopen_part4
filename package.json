@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon start",
-    "test": "jest --verbose",
+    "test": "NODE_ENV=test jest --verbose --runInBand",
     "lint": "eslint ."
   },
   "repository": {
@@ -28,9 +28,7 @@
   "devDependencies": {
     "eslint": "^7.7.0",
     "eslint-plugin-react": "^7.20.6",
-    "jest": "^26.4.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "jest": "^26.4.0",
+    "supertest": "^4.0.2"
   }
 }
