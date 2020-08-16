@@ -46,7 +46,7 @@ describe('most likes', () => {
 
 describe('most blogs', () => {
     const author = {
-        author: "Robert C. Martin",
+        author: 'Robert C. Martin',
         blogs: 3
     }
 
@@ -58,7 +58,7 @@ describe('most blogs', () => {
 
 describe('author with most likes', () => {
     const author = {
-        author: "Edsger W. Dijkstra",
+        author: 'Edsger W. Dijkstra',
         likes: 17
     }
 

@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const dummy = (blogs) => {
+const dummy = (blogs) => { // eslint-disable-line
     return 1
 }
 
@@ -32,12 +32,12 @@ const mostBlogs = ( blogs ) => {
 
 const mostLikes = (blogs) => {
     return  _.chain(blogs)
-            .groupBy('author')
-            .map( (blogList, author) => {
-                return { author : author, likes : _.sumBy(blogList, (b) => b.likes) }
-            })
-            .maxBy('likes')
-            .value()
+        .groupBy('author')
+        .map( (blogList, author) => {
+            return { author : author, likes : _.sumBy(blogList, (b) => b.likes) }
+        })
+        .maxBy('likes')
+        .value()
 }
 
 module.exports = {

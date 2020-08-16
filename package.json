@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon start",
     "test": "NODE_ENV=test jest --verbose --runInBand",
-    "lint": "eslint ."
+    "lint": "eslint . --fix"
   },
   "repository": {
     "type": "git",
