@@ -1,37 +1,39 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog.js')
+require('express-async-errors')
 
-blogsRouter.get('/', (request, response) => {
-    Blog
-        .find({})
-        .then(blogs => {
-            response.json(blogs)
-        })
+blogsRouter.get('/', async (req, res) => {
+    const result = await Blog .find({})
+    res.json(result)
 })
 
-blogsRouter.post('/', (request, response) => {
-    const blog = new Blog(request.body)
+blogsRouter.post('/', async (req, res, next) => {
+    const blog = new Blog(req.body)
 
-    blog
-        .save()
-        .then(result => {
-            response.status(201).json(result)
-        }).catch( error => {
-            response.status(400).json({error: error.message})
-        })
+
+    const result = await blog.save()
+    res.status(201).json(result)
 })
 
-blogsRouter.delete('/:id', (request, response) => {
-    const id = request.params.id
-    Blog.findByIdAndDelete(id)
-        .then(result => {
-            if (result)
-                response.status(200).json(result)
-            else
-                response.status(404).end()
-        }).catch( error => {
-            console.log(error)
-            response.status(400).json({error: error.message})
-        })
+blogsRouter.delete('/:id', async (req, res, next) => {
+    const id = req.params.id
+    result = await Blog.findByIdAndDelete(id)
+    if (result)
+        res.status(200).json(result)
+    else
+        res.status(404).end()
 })
+
+blogsRouter.put('/:id', async (req, res, next) => {
+    const newBlog = req.body
+    const opts = {
+        new : true, 
+        runValidators : true,
+        context: 'query'
+    }
+
+    const result = await Blog.findByIdAndUpdate(req.params.id, newBlog, opts)
+    res.status(200).json(result)
+})
+
 module.exports = blogsRouter

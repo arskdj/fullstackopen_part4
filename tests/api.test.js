@@ -14,7 +14,7 @@ afterAll( async () => {
 })
 
 describe('api tests', () => {
-    const url = '/api/blogs/'
+    const url = '/api/blogs'
 
     test('get blogs url', async () => {
         const response = await api.get(url)
@@ -85,6 +85,18 @@ describe('api tests', () => {
         const blog = Blog(h.initialBlogs[0]).toJSON()
 
         const response = await api.delete(`${url}/${blog.id}`)
+            .expect(200)
+            .expect(blog)
+            .expect('Content-Type', /application\/json/)
+    })
+
+
+    test('update blog', async () => {
+        let blog = Blog(h.initialBlogs[0]).toJSON()
+        blog.likes = 99999
+
+        const response = await api.put(`${url}/${blog.id}`)
+            .send(blog)
             .expect(200)
             .expect(blog)
             .expect('Content-Type', /application\/json/)

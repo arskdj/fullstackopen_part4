@@ -18,7 +18,6 @@ const closeDB = async () => {
 
 const getAllBlogs = async () => {
     const blogs = await Blog.find({})
-    console.log(blogs)
     return blogs.map(b => b.toJSON())
 }
 
