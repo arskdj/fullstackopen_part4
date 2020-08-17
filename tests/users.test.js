@@ -67,7 +67,7 @@ describe('users', () => {
 
     test('post invalid password', async () => {
         const user = {
-            'name' : 'invalidUser',
+            'name' : 'invalid_password',
             'username' : 'invalidUser',
             'password' : '12'
         }
@@ -77,13 +77,13 @@ describe('users', () => {
             .expect(400)
             .expect({error: 'password too short'})
 
-        const allUsers = await getAllUsers()
-        expect(allUsers).toHaveLength(initialUsers.length)
+        const userInDb = await User.find({name:user.name})
+        expect(userInDb).toEqual([])
     })
 
     test('post invalid username', async () => {
         const user = {
-            'name' : 'invalidUser',
+            'name' : 'invalid_username',
             'username' : 'n',
             'password' : '1234'
         }
@@ -91,9 +91,9 @@ describe('users', () => {
         await api.post(url)
             .send(user)
             .expect(400)
-            .expect({error: 'password too short'})
+            .expect({error: 'username too short'})
 
-        const allUsers = await getAllUsers()
-        expect(allUsers).toHaveLength(initialUsers.length)
+        const userInDb = await User.find({name:user.name})
+        expect(userInDb).toEqual([])
     })
 })
