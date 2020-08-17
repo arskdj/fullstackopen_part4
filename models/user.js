@@ -1,12 +1,10 @@
 const mongoose = require('mongoose')
-const config = require('../utils/config.js')
 const uniqueValidator = require('mongoose-unique-validator')
 
-mongoose.set('useFindAndModify', false)
 
 const userSchema = new mongoose.Schema({
     name :          { type: String , default : 'anonymous'}, 
-    username :      { type: String , required : true, unique : true}, 
+    username :      { type: String , required : true, unique : true, minLength : 3}, 
     password :      { type: String , required : true}, 
     blogs : [
         {
@@ -28,7 +26,5 @@ userSchema.set('toJSON', {
 
 const User = mongoose.model('User', userSchema)
 
-const mongoUrl = config.DB_URI
-mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 
 module.exports = User

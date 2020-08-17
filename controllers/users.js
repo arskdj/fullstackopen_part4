@@ -1,6 +1,7 @@
 const usersRouter = require('express').Router()
 const User = require('../models/user.js')
 const bcrypt = require('bcrypt')
+require('express-async-errors')
 
 usersRouter.get('/', async (req, res) => {
     const users = await User.find({})
@@ -9,6 +10,11 @@ usersRouter.get('/', async (req, res) => {
 })
 
 usersRouter.post('/', async (req, res) => {
+    const plen = req.body.password.length
+    console.log(plen)
+    if (plen < 3){
+        res.status(400).json({error: 'password too short'})
+    }
 
     const saltRounds = 15
     const passHash = await bcrypt.hash(req.body.password, saltRounds)
@@ -16,7 +22,7 @@ usersRouter.post('/', async (req, res) => {
     const user = User({...req.body, password : passHash})
     await user.save()
 
-    res.status(200).json(user)
+    res.status(201).json(user)
 
 })
 

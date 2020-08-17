@@ -1,7 +1,4 @@
 const mongoose = require('mongoose')
-const config = require('../utils/config.js')
-
-mongoose.set('useFindAndModify', false)
 
 const blogSchema = new mongoose.Schema({
     title: { type: String , required : true}, 
@@ -23,8 +20,5 @@ blogSchema.set('toJSON', {
 })
 
 const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = config.DB_URI
-mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 
 module.exports = Blog

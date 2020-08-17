@@ -3,14 +3,22 @@ const supertest = require('supertest')
 const api = supertest(app)
 const h = require('./helper')
 const Blog = require('../models/blog')
+const db = require('../utils/db.js')
 require('express-async-errors')
 
+beforeAll( async () => {
+    await db.connect()
+})
+
 beforeEach( async () => {
-    await h.initDB()
+    await Blog.deleteMany({})
+    const blogs = h.initialBlogs.map(b => new Blog(b))
+    const promises = await blogs.map(b => b.save())
+    await Promise.all(promises)
 })
 
 afterAll( async () => {
-    await h.closeDB()
+    await db.close()
 })
 
 describe('api tests', () => {
