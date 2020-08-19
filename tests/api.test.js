@@ -4,7 +4,9 @@ const api = supertest(app)
 const h = require('./helper')
 const Blog = require('../models/blog')
 const db = require('../utils/db.js')
+const auth = require('../utils/auth')
 require('express-async-errors')
+
 
 beforeAll( async () => {
     await db.connect()
@@ -41,14 +43,20 @@ describe('api tests', () => {
     })
 
     test('post blog', async () => {
+        const token = await h.getUserToken()
+        const payload = await auth.decryptToken(token)
+
+
         const blog = {
             title: 'temp title',
             author : 'temp author',
             url : 'temp url',
-            likes : 123556
+            likes : 123556,
+            user : payload.id
         }
 
         const response = await api.post(url)
+            .set('authorization', `bearer ${token}`)
             .send(blog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -63,6 +71,8 @@ describe('api tests', () => {
     })
 
     test('likes default value', async () => {
+        const token = await h.getUserToken()
+
         const blog = {
             title: 'temp title',
             author : 'temp author',
@@ -71,6 +81,7 @@ describe('api tests', () => {
 
         const response = await api.post(url)
             .send(blog)
+            .set('authorization', `bearer ${token}`)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
@@ -78,6 +89,8 @@ describe('api tests', () => {
     })
 
     test('check required properties', async () => {
+        const token = await h.getUserToken()
+
         const blog = {
             author : 'temp author',
             likes : 123
@@ -85,6 +98,7 @@ describe('api tests', () => {
 
         await api.post(url)
             .send(blog)
+            .set('authorization', `bearer ${token}`)
             .expect(400)
             .expect('Content-Type', /application\/json/)
     })

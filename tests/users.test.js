@@ -3,6 +3,8 @@ const supertest = require('supertest')
 const api = supertest(app)
 const User = require('../models/user')
 const db = require('../utils/db.js')
+const auth = require('../utils/auth')
+const h = require('./helper')
 require('express-async-errors')
 
 beforeAll( async () => {
@@ -11,8 +13,7 @@ beforeAll( async () => {
 
 beforeEach( async () => {
     await User.deleteMany({})
-    const users = initialUsers.map(b => new User(b))
-    const promises = await users.map(b => b.save())
+    const promises = await h.initialUsers.map(u => auth.register(u))
     await Promise.all(promises)
 })
 
@@ -20,18 +21,6 @@ afterAll( async () => {
     await db.close()
 })
 
-const initialUsers = [
-    {name : 'mario', username : 'some1', password : '1234'},
-    {name : 'luigi', username : 'some2', password : '1234'},
-    {name : 'waluigi', username: 'some3', password : '1234'},
-    {name : 'wario',   username : 'some4', password : '1234'}
-]
-
-
-const getAllUsers = async () => {
-    const users = await User.find({})
-    return users.map(u => u.toJSON())
-}
 
 describe('users', () => {
     const url = '/api/users/'
@@ -44,7 +33,7 @@ describe('users', () => {
         expect(response.body.length).toBe(4)
     })
 
-    test('post user', async () => {
+    test('register user', async () => {
         const user = {
             'name' : 'testUser',
             'username' : 'sometest',
@@ -60,12 +49,12 @@ describe('users', () => {
         delete user.password
         expect(user).toEqual({name, username})
 
-        const allUsers = await getAllUsers()
-        expect(allUsers).toHaveLength(initialUsers.length + 1)
+        const allUsers = await h.getAllUsers()
+        expect(allUsers).toHaveLength(h.initialUsers.length + 1)
     })
 
 
-    test('post invalid password', async () => {
+    test('register invalid password', async () => {
         const user = {
             'name' : 'invalid_password',
             'username' : 'invalidUser',
@@ -81,7 +70,7 @@ describe('users', () => {
         expect(userInDb).toEqual([])
     })
 
-    test('post invalid username', async () => {
+    test('register invalid username', async () => {
         const user = {
             'name' : 'invalid_username',
             'username' : 'n',
@@ -98,10 +87,18 @@ describe('users', () => {
     })
 })
 
-describe('login', () => {
+describe('auth', () => {
     const url = '/api/login'
+
+    test('user login', async () => {
+        const {username, password} = h.initialUsers[0]
+
+        const res = await api.post(url)
+            .send({ username, password })
+            .expect(201)
+    })
     
-    test('wrong username', async () => {
+    test('login wrong username', async () => {
         const user = {
             'username' : 'notfound',
             'password' : '1234'
@@ -111,10 +108,9 @@ describe('login', () => {
             .send(user)
             .expect(404)
             .expect({error: 'user not found'})
-        
     })
 
-    test('wrong username', async () => {
+    test('login wrong password', async () => {
         const user = {
             'username' : 'some1',
             'password' : 'wrongpass'
@@ -124,6 +120,24 @@ describe('login', () => {
             .send(user)
             .expect(400)
             .expect({error: 'wrong password'})
-        
+    })
+
+
+    test('post authorized blog', async () => {
+        const {username, password} = h.initialUsers[0]
+
+        const token = auth.login(username, password)
+
+        const blog = {
+            title: 'auth title',
+            author : 'auth author',
+            url : 'auth url',
+            likes : 123556,
+            user : token.id
+        }
+        await api.post('/api/blogs')
+                .send(blog)
+
+
     })
 })
