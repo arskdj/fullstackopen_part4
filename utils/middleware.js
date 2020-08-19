@@ -1,3 +1,17 @@
+const auth = require('../utils/auth')
+
+const tokenExtractor = (req, res, next) => {
+
+    const authorization = req.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+        req.token = authorization.substring(7)
+    }else{
+        req.token = null
+    }
+
+
+    next()
+}
 const errorHandler = (error, req, res, next) => {
     console.log({error : error.name, msg : error.message})
 
@@ -29,5 +43,6 @@ const errorHandler = (error, req, res, next) => {
 }
 
 module.exports = {
-    errorHandler
+    errorHandler,
+    tokenExtractor
 }

@@ -44,7 +44,7 @@ describe('api tests', () => {
 
     test('post blog', async () => {
         const token = await h.getUserToken()
-        const payload = await auth.decryptToken(token)
+        const user = await auth.getAuthUser(token)
 
 
         const blog = {
@@ -52,7 +52,7 @@ describe('api tests', () => {
             author : 'temp author',
             url : 'temp url',
             likes : 123556,
-            user : payload.id
+            user : user.id
         }
 
         const response = await api.post(url)

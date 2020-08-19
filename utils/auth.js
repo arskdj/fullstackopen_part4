@@ -4,35 +4,26 @@ const jwt = require('jsonwebtoken')
 const config = require('../utils/config')
 require('express-async-errors')
 
-const extractToken = (req) => {
-    const authorization = req.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-        return authorization.substring(7)
-    }
-    return null
-}
-
 const decryptToken = async (token) => {
-    const payload = await jwt.verify(token, config.SECRET)
+    let payload = null
 
-    if (!payload.id){
+    try {
+        payload = await jwt.verify(token, config.SECRET)
+    } catch {
         throw new Error('InvalidToken')
     }
 
     return payload
 }
 
-const getAuthUser = async (req) => {
-    const token = extractToken(req)
-
+const getAuthUser = async (token) => {
     if (!token){
         throw new Error('NoToken')
     }
 
     const payload = await decryptToken(token)
-
-
     const user = await User.findById(payload.id)
+
     if (!user){
         throw new Error('User404')
     }

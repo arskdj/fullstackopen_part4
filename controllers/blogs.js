@@ -13,8 +13,7 @@ blogsRouter.get('/', async (req, res) => {
 })
 
 blogsRouter.post('/', async (req, res) => {
-
-    const user = await auth.getAuthUser(req)
+    const user = await auth.getAuthUser(req.token)
 
     const blog = new Blog(req.body)
     blog.user = user._id
