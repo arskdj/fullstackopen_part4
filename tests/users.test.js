@@ -3,7 +3,6 @@ const supertest = require('supertest')
 const api = supertest(app)
 const User = require('../models/user')
 const db = require('../utils/db.js')
-const auth = require('../utils/auth')
 const h = require('./helper')
 require('express-async-errors')
 
@@ -13,7 +12,8 @@ beforeAll( async () => {
 
 beforeEach( async () => {
     await User.deleteMany({})
-    const promises = await h.initialUsers.map(u => auth.register(u))
+    const users = h.initialUsers.map(u=> new User(u))
+    const promises = await users.map(u => u.save())
     await Promise.all(promises)
 })
 
@@ -89,19 +89,22 @@ describe('users', () => {
 
 describe('auth', () => {
     const url = '/api/login'
+    const password = '1234'
 
     test('user login', async () => {
-        const {username, password} = h.initialUsers[0]
+        const {username} = h.initialUsers[0]
 
         const res = await api.post(url)
             .send({ username, password })
             .expect(201)
+
+        console.log(res.body)
     })
-    
+
     test('login wrong username', async () => {
         const user = {
             'username' : 'notfound',
-            'password' : '1234'
+            password
         }
 
         await api.post(url)
@@ -124,9 +127,12 @@ describe('auth', () => {
 
 
     test('post authorized blog', async () => {
-        const {username, password} = h.initialUsers[0]
+        const {username} = h.initialUsers[0]
+        const res = await api.post(url)
+            .send({ username, password })
+            .expect(201)
 
-        const token = auth.login(username, password)
+        const token = res.body
 
         const blog = {
             title: 'auth title',
@@ -136,8 +142,7 @@ describe('auth', () => {
             user : token.id
         }
         await api.post('/api/blogs')
-                .send(blog)
-
+            .send(blog)
 
     })
 })

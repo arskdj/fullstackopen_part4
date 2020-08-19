@@ -4,7 +4,6 @@ const api = supertest(app)
 const h = require('./helper')
 const Blog = require('../models/blog')
 const db = require('../utils/db.js')
-const auth = require('../utils/auth')
 require('express-async-errors')
 
 
@@ -25,6 +24,7 @@ afterAll( async () => {
 
 describe('api tests', () => {
     const url = '/api/blogs'
+    const password = '1234'
 
     test('get blogs url', async () => {
         const response = await api.get(url)
@@ -43,8 +43,11 @@ describe('api tests', () => {
     })
 
     test('post blog', async () => {
-        const token = await h.getUserToken()
-        const user = await auth.getAuthUser(token)
+        const u = h.initialUsers[0]
+        const res = await api.post('/api/login')
+            .send({ username: u.username, password: password })
+            .expect(201)
+        const token = res.body
 
 
         const blog = {
@@ -52,7 +55,7 @@ describe('api tests', () => {
             author : 'temp author',
             url : 'temp url',
             likes : 123556,
-            user : user.id
+            user : u._id.toString()
         }
 
         const response = await api.post(url)
@@ -71,7 +74,11 @@ describe('api tests', () => {
     })
 
     test('likes default value', async () => {
-        const token = await h.getUserToken()
+        const u = h.initialUsers[0]
+        const res = await api.post('/api/login')
+            .send({ username: u.username, password: password })
+            .expect(201)
+        const token = res.body
 
         const blog = {
             title: 'temp title',
@@ -89,7 +96,11 @@ describe('api tests', () => {
     })
 
     test('check required properties', async () => {
-        const token = await h.getUserToken()
+        const u = h.initialUsers[0]
+        const res = await api.post('/api/login')
+            .send({ username: u.username, password: password })
+            .expect(201)
+        const token = res.body
 
         const blog = {
             author : 'temp author',
@@ -104,14 +115,36 @@ describe('api tests', () => {
     })
 
     test('delete blog', async () => {
+        const u = h.initialUsers[0]
+        const res = await api.post('/api/login')
+            .send({ username: u.username, password: password })
+            .expect(201)
+        const token = res.body
+
         const blog = Blog(h.initialBlogs[0]).toJSON()
 
         await api.delete(`${url}/${blog.id}`)
+            .set('authorization', `bearer ${token}`)
             .expect(200)
             .expect(blog)
             .expect('Content-Type', /application\/json/)
     })
 
+    test('delete blog not allowed', async () => {
+        const u = h.initialUsers[1]
+        const res = await api.post('/api/login')
+            .send({ username: u.username, password: password })
+            .expect(201)
+        const token = res.body
+
+        const blog = Blog(h.initialBlogs[0]).toJSON()
+
+        await api.delete(`${url}/${blog.id}`)
+            .set('authorization', `bearer ${token}`)
+            .expect(401)
+            .expect({error:'user not allowed to delete'})
+            .expect('Content-Type', /application\/json/)
+    })
 
     test('update blog', async () => {
         let blog = Blog(h.initialBlogs[0]).toJSON()

@@ -1,5 +1,3 @@
-const auth = require('../utils/auth')
-
 const tokenExtractor = (req, res, next) => {
 
     const authorization = req.get('authorization')
@@ -13,7 +11,7 @@ const tokenExtractor = (req, res, next) => {
     next()
 }
 const errorHandler = (error, req, res, next) => {
-    console.log({error : error.name, msg : error.message})
+    console.log(error.message)
 
     if (error.name === 'ValidationError') {
         return res.status(400).send({error: 'username too short'})

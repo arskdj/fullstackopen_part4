@@ -9,7 +9,7 @@ const decryptToken = async (token) => {
 
     try {
         payload = await jwt.verify(token, config.SECRET)
-    } catch {
+    } catch (error) {
         throw new Error('InvalidToken')
     }
 

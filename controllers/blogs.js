@@ -23,12 +23,19 @@ blogsRouter.post('/', async (req, res) => {
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
-    const id = req.params.id
-    const result = await Blog.findByIdAndDelete(id)
-    if (result)
-        res.status(200).json(result)
-    else
-        res.status(404).end()
+    const blogId = req.params.id
+    const tokenUser = await auth.getAuthUser(req.token)
+    const blog = await Blog.findById(blogId)
+
+    if (tokenUser._id.toString() === blog.user.toString()){
+        const result = await Blog.findByIdAndDelete(blogId)
+        if (result)
+            res.status(200).json(result)
+        else
+            res.status(404).end()
+    }else{
+        res.status(401).json({error: 'user not allowed to delete'})
+    }
 })
 
 blogsRouter.put('/:id', async (req, res) => {
