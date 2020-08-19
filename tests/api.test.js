@@ -73,6 +73,23 @@ describe('api tests', () => {
         expect(allBlogs).toHaveLength(h.initialBlogs.length + 1)
     })
 
+    test('post blog token not provided', async () => {
+        const u = h.initialUsers[0]
+
+        const blog = {
+            title: 'temp title',
+            author : 'temp author',
+            url : 'temp url',
+            likes : 123556,
+            user : u._id.toString()
+        }
+
+        await api.post(url)
+            .send(blog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+    })
+
     test('likes default value', async () => {
         const u = h.initialUsers[0]
         const res = await api.post('/api/login')
