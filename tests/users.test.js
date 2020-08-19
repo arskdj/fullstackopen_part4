@@ -97,3 +97,33 @@ describe('users', () => {
         expect(userInDb).toEqual([])
     })
 })
+
+describe('login', () => {
+    const url = '/api/login'
+    
+    test('wrong username', async () => {
+        const user = {
+            'username' : 'notfound',
+            'password' : '1234'
+        }
+
+        await api.post(url)
+            .send(user)
+            .expect(404)
+            .expect({error: 'user not found'})
+        
+    })
+
+    test('wrong username', async () => {
+        const user = {
+            'username' : 'some1',
+            'password' : 'wrongpass'
+        }
+
+        await api.post(url)
+            .send(user)
+            .expect(400)
+            .expect({error: 'wrong password'})
+        
+    })
+})
