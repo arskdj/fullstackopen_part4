@@ -47,7 +47,8 @@ describe('api tests', () => {
         const res = await api.post('/api/login')
             .send({ username: u.username, password: password })
             .expect(201)
-        const token = res.body
+        const token = res.body.token.token
+        console.log('post',token)
 
 
         const blog = {
@@ -95,7 +96,7 @@ describe('api tests', () => {
         const res = await api.post('/api/login')
             .send({ username: u.username, password: password })
             .expect(201)
-        const token = res.body
+        const token = res.body.token.token
 
         const blog = {
             title: 'temp title',
@@ -117,7 +118,7 @@ describe('api tests', () => {
         const res = await api.post('/api/login')
             .send({ username: u.username, password: password })
             .expect(201)
-        const token = res.body
+        const token = res.body.token.token
 
         const blog = {
             author : 'temp author',
@@ -136,7 +137,7 @@ describe('api tests', () => {
         const res = await api.post('/api/login')
             .send({ username: u.username, password: password })
             .expect(201)
-        const token = res.body
+        const token = res.body.token.token
 
         const blog = Blog(h.initialBlogs[0]).toJSON()
 
@@ -152,7 +153,7 @@ describe('api tests', () => {
         const res = await api.post('/api/login')
             .send({ username: u.username, password: password })
             .expect(201)
-        const token = res.body
+        const token = res.body.token.token
 
         const blog = Blog(h.initialBlogs[0]).toJSON()
 

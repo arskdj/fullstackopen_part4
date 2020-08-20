@@ -132,7 +132,7 @@ describe('auth', () => {
             .send({ username, password })
             .expect(201)
 
-        const token = res.body
+        const token = res.body.token.token
 
         const blog = {
             title: 'auth title',
