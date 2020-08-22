@@ -139,12 +139,14 @@ describe('api tests', () => {
             .expect(201)
         const token = res.body.token.token
 
-        const blog = Blog(h.initialBlogs[0]).toJSON()
+        const blog = Blog(h.initialBlogs[0])
+        const expected = JSON.stringify(blog)
+        
 
         await api.delete(`${url}/${blog.id}`)
             .set('authorization', `bearer ${token}`)
             .expect(200)
-            .expect(blog)
+            .expect(expected)
             .expect('Content-Type', /application\/json/)
     })
 
@@ -165,13 +167,15 @@ describe('api tests', () => {
     })
 
     test('update blog', async () => {
-        let blog = Blog(h.initialBlogs[0]).toJSON()
+        let blog = Blog(h.initialBlogs[0])
         blog.likes = 99999
+
+        const expected = JSON.stringify(blog)
 
         await api.put(`${url}/${blog.id}`)
             .send(blog)
             .expect(200)
-            .expect(blog)
+            .expect(expected)
             .expect('Content-Type', /application\/json/)
     })
 })

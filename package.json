@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "nodemon start",
-        "test": "NODE_ENV=test jest --verbose --runInBand  --detectOpenHandles",
+        "test": "NODE_ENV=dev jest --verbose --runInBand  --detectOpenHandles",
         "lint": "eslint . --fix"
     },
     "repository": {
